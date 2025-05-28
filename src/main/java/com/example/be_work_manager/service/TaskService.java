@@ -83,7 +83,7 @@ public class TaskService {
         return toDTO(task);
     }
 
-   public TaskDTO toDTO(Task task) {
+    public TaskDTO toDTO(Task task) {
         TaskDTO taskDTO = new TaskDTO();
         taskDTO.setId(task.getId());
         taskDTO.setTitle(task.getTitle());

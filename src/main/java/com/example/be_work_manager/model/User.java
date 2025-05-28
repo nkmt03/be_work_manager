@@ -19,9 +19,10 @@ public class User {
     @Column
     private String name;
 
-    @Column(name = "created_at", updatable = false)
+    @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    // Getters and Setters
     public Long getId() {
         return id;
     }

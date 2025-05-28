@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "tasks")
-
 public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,22 +26,23 @@ public class Task {
     @Column(nullable = false)
     private TaskStatus status = TaskStatus.NOT_COMPLETED;
 
-    @Column(name = "reminder_time")
-    private String reminderTime; // Ví dụ: "1h", "6h", "1d"
+    @Column
+    private String reminderTime;
 
     @Column
-    private String icon; // Ví dụ: "gamepad", "book"
+    private String icon;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(name = "created_at", updatable = false)
+    @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt = LocalDateTime.now();
 
+    // Getters and Setters
     public Long getId() {
         return id;
     }

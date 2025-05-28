@@ -8,7 +8,6 @@ import com.example.be_work_manager.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -32,11 +31,9 @@ public class AuthController {
     }
 
     @DeleteMapping("/delete-account")
-    public ResponseEntity<Void> deleteAccount(Authentication authentication) {
-        String email = authentication.getName();
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        authService.deleteAccount(user.getId());
+    public ResponseEntity<Void> deleteAccount(@RequestHeader("Session-Id") String sessionId) {
+        Long userId = authService.getUserIdFromSession(sessionId);
+        authService.deleteAccount(userId);
         return ResponseEntity.noContent().build();
     }
 }

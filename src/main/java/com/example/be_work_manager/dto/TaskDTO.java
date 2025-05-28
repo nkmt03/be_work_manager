@@ -4,7 +4,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
-
 public class TaskDTO {
     private Long id;
 
@@ -22,6 +21,7 @@ public class TaskDTO {
     private String icon;
     private Long userId;
 
+    // Getters and Setters
     public Long getId() {
         return id;
     }

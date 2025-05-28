@@ -5,13 +5,13 @@ import com.example.be_work_manager.dto.AuthResponse;
 import com.example.be_work_manager.model.User;
 import com.example.be_work_manager.repository.TaskRepository;
 import com.example.be_work_manager.repository.UserRepository;
-import com.example.be_work_manager.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 @Service
 public class AuthService {
@@ -25,11 +25,8 @@ public class AuthService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private JwtUtil jwtUtil;
-
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    // Lưu sessionId và userId (thay cho JWT)
+    private final Map<String, Long> sessions = new HashMap<>();
 
     public AuthResponse register(AuthRequest authRequest) {
         if (userRepository.findByEmail(authRequest.getEmail()).isPresent()) {
@@ -41,9 +38,11 @@ public class AuthService {
         user.setName(authRequest.getName());
         userRepository.save(user);
 
-        String token = jwtUtil.generateToken(user.getEmail());
+        String sessionId = UUID.randomUUID().toString();
+        sessions.put(sessionId, user.getId());
+
         AuthResponse response = new AuthResponse();
-        response.setToken(token);
+        response.setToken(sessionId);
         response.setUserId(user.getId());
         response.setEmail(user.getEmail());
         response.setName(user.getName());
@@ -51,15 +50,18 @@ public class AuthService {
     }
 
     public AuthResponse login(AuthRequest authRequest) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword())
-        );
-        String email = authentication.getName();
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findByEmail(authRequest.getEmail())
+                .orElseThrow(() -> new RuntimeException("Invalid email or password"));
 
-        String token = jwtUtil.generateToken(email);
+        if (!passwordEncoder.matches(authRequest.getPassword(), user.getPassword())) {
+            throw new RuntimeException("Invalid email or password");
+        }
+
+        String sessionId = UUID.randomUUID().toString();
+        sessions.put(sessionId, user.getId());
+
         AuthResponse response = new AuthResponse();
-        response.setToken(token);
+        response.setToken(sessionId);
         response.setUserId(user.getId());
         response.setEmail(user.getEmail());
         response.setName(user.getName());
@@ -72,5 +74,13 @@ public class AuthService {
         }
         taskRepository.deleteAll(taskRepository.findByUserId(userId));
         userRepository.deleteById(userId);
+    }
+
+    public Long getUserIdFromSession(String sessionId) {
+        Long userId = sessions.get(sessionId);
+        if (userId == null) {
+            throw new RuntimeException("Invalid session");
+        }
+        return userId;
     }
 }

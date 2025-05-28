@@ -6,6 +6,7 @@ public class AuthResponse {
     private String email;
     private String name;
 
+    // Getters and Setters
     public String getToken() {
         return token;
     }
@@ -14,12 +15,12 @@ public class AuthResponse {
         this.token = token;
     }
 
-    public String getName() {
-        return name;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public String getEmail() {
@@ -30,11 +31,11 @@ public class AuthResponse {
         this.email = email;
     }
 
-    public Long getUserId() {
-        return userId;
+    public String getName() {
+        return name;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setName(String name) {
+        this.name = name;
     }
 }
